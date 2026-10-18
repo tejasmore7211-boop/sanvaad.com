@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sanvaad</title>
+<style>
+:root{--bg:#f4f2fb;--s1:#fff;--s2:#ebe8f6;--bd:#dedaee;--tx:#1d1a2e;--mu:#6f6a86;--pr:#6c4dff;--ac:#ff6b8a;--on:#fff;--me:#6c4dff;--th:#fff;--er:#d23b4f;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e0c18;--s1:#181527;--s2:#221e36;--bd:#2f2a47;--tx:#eeebfa;--mu:#9a94b8;--pr:#8f78ff;--on:#120d2e;--me:#5a43e0;--th:#262140;--er:#ff7285;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e0c18;--s1:#181527;--s2:#221e36;--bd:#2f2a47;--tx:#eeebfa;--mu:#9a94b8;--pr:#8f78ff;--on:#120d2e;--me:#5a43e0;--th:#262140;--er:#ff7285;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;overflow:hidden}
+body{background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-top:env(safe-area-inset-top,0px)}
+#app{height:100%}
+button{font:inherit;color:inherit;cursor:pointer}
+input{font:inherit;color:var(--tx);background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:11px 14px;width:100%}
+input:focus-visible,button:focus-visible{outline:2px solid var(--pr);outline-offset:2px}
+svg.i{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.av{aspect-ratio:1;flex:none;border-radius:50%;object-fit:cover;display:grid;place-items:center;color:#fff;font-weight:700;flex:none}
+.btn{border:0;background:var(--pr);color:var(--on);font-weight:600;padding:13px 18px;border-radius:12px;width:100%}
+.btn.g{background:transparent;color:var(--pr)}
+.btn:disabled{opacity:.5}
+.ic{border:0;background:none;padding:8px;border-radius:50%;display:grid;place-items:center}.ic:hover{background:var(--s2)}
+/* intro + login */
+.pst{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px;background:linear-gradient(160deg,#1a1245,#4a2fc2 55%,#ff6b8a);color:#fff;gap:14px;overflow:auto}
+.pst h1{margin:0;font-size:38px;letter-spacing:1px}.pst p{margin:0;max-width:320px;font-size:17px}.pst p.s{opacity:.8;font-size:15px}
+.pst .btn{background:#fff;color:#2a1c80;max-width:320px;margin-top:10px}
+.pst .btn.g{background:transparent;color:#fff;margin:0}
+.card{background:var(--s1);color:var(--tx);border-radius:20px;padding:24px;width:100%;max-width:380px;text-align:left;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 60px #0005}
+.card h2{margin:0}.card .btn{background:var(--pr);color:var(--on);max-width:none;margin:0}.card .btn.g{background:transparent;color:var(--pr)}
+.card p{margin:0;color:var(--mu);font-size:14px}.card label{font-size:12px;font-weight:700;color:var(--mu)}
+.row2{display:flex;gap:8px}.row2 input:first-child{width:76px;flex:none}
+.err{color:var(--er);font-size:13px;min-height:18px}
+.otp{font-size:26px;letter-spacing:10px;text-align:center}
+/* shell */
+.sh{height:100%;display:grid;grid-template-columns:68px 360px 1fr;background:var(--bg)}
+.rail{background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:6px}
+.rail i{flex:1}
+.rb{border:0;background:none;color:var(--mu);width:48px;height:48px;border-radius:14px;display:grid;place-items:center;position:relative}
+.rb small{display:none}.rb:hover{background:var(--s2)}.rb.on{background:var(--s2);color:var(--pr)}
+.rail .me{cursor:pointer;margin-top:8px}
+.lst{background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column;min-height:0}
+.lst header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 8px}.lst h2{margin:0;font-size:22px}
+.lst>input{margin:4px 14px 10px;width:auto;border-radius:99px;background:var(--bg)}
+#lb{flex:1;overflow-y:auto}
+.rw{display:flex;align-items:center;gap:12px;padding:10px 16px;cursor:pointer;border:0;background:none;width:100%;text-align:left}
+.rw:hover,.rw.on{background:var(--s2)}.rw>div:not(.av){flex:1;min-width:0}
+.rw b{display:block}.rw span{display:block;color:var(--mu);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rw time{color:var(--mu);font-size:12px}
+.empty{text-align:center;color:var(--mu);padding:40px 24px}
+.cp{display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--bg)}
+.ch{display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--s1);border-bottom:1px solid var(--bd)}
+.bk{display:none}
+#ml{flex:1;overflow-y:auto;padding:14px 6%;display:flex;flex-direction:column;gap:4px}
+.m{max-width:75%;padding:7px 11px 5px;border-radius:14px;background:var(--th);box-shadow:0 1px 1px #0002;white-space:pre-wrap;word-wrap:break-word;align-self:flex-start;border-bottom-left-radius:4px}
+.m.me{align-self:flex-end;background:var(--me);color:#fff;border-bottom-left-radius:14px;border-bottom-right-radius:4px}
+.m small{display:block;text-align:right;font-size:11px;opacity:.7}
+.ib{display:flex;gap:8px;padding:10px 14px;background:var(--s1);border-top:1px solid var(--bd);padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+.ib input{border-radius:99px}.sd{background:var(--pr);color:var(--on);width:46px;height:46px;flex:none}.sd:hover{background:var(--pr)}
+.hero{margin:auto;text-align:center;color:var(--mu);padding:24px}
+.set{padding:8px 0}.set .rw{padding:14px 16px}
+.pf{margin:auto;width:100%;max-width:380px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.seg{display:flex;gap:8px;padding:6px 16px 14px}.seg button{flex:1;border:1px solid var(--bd);background:none;border-radius:10px;padding:9px}.seg button.on{background:var(--pr);color:var(--on);border-color:var(--pr)}
+.tg{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--bd);cursor:pointer;background:none;border-left:0;border-right:0;border-top:0;width:100%;text-align:left}
+.sw{width:42px;height:24px;border-radius:99px;background:var(--bd);position:relative;flex:none;transition:.15s}.sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.15s}.on>.sw{background:var(--pr)}.on>.sw::after{left:21px}
+.dp{width:100%;max-width:560px;margin:0 auto;overflow-y:auto;flex:1}.dp h3{padding:16px 16px 6px;margin:0;color:var(--mu);font-size:13px}.dp .btn{margin:14px 16px;width:auto}.dp .btn.d{background:none;color:var(--er);border:1px solid var(--er)}
+.wpg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:6px 16px 14px}.wc{height:80px;border-radius:12px;border:2px solid var(--bd);cursor:pointer;display:flex;align-items:flex-end;padding:6px;color:#fff;font-size:12px;font-weight:700;text-shadow:0 1px 3px #000a}.wc.on{border-color:var(--pr)}
+.sr{display:flex;align-items:center;gap:14px;padding:14px 16px;cursor:pointer;border:0;background:none;width:100%;text-align:left;color:var(--tx)}.sr:hover{background:var(--s2)}.sr small{display:block;color:var(--mu)}.sr svg{color:var(--mu)}
+.sv{position:relative;flex:1;display:flex;flex-direction:column;background:#000;min-height:0}
+.sb{display:flex;gap:4px;padding:10px 12px 6px;position:absolute;top:0;left:0;right:0;z-index:3}.sb i{flex:1;height:3px;background:#ffffff55;border-radius:2px;overflow:hidden}.sb b{display:block;height:100%;background:#fff}
+.sh2{position:absolute;top:16px;left:0;right:0;z-index:3;display:flex;align-items:center;gap:10px;padding:8px 12px;color:#fff;background:linear-gradient(#000a,transparent)}
+.sc{flex:1;display:grid;place-items:center;color:#fff;font-size:24px;text-align:center;padding:24px;white-space:pre-wrap;overflow:hidden}.sc img,.sc video{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}.sv .sc{min-height:0;width:100%;height:100%;position:relative}.sv .sc img,.sv .sc video{width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain}.dp .sc img,.dp .sc video{max-height:360px}
+.cap{position:absolute;bottom:0;left:0;right:0;padding:24px 18px 20px;color:#fff;text-align:center;background:linear-gradient(transparent,#000b);z-index:3}
+.sz{position:absolute;top:80px;bottom:80px;width:40%;z-index:2;cursor:pointer}.sz.l{left:0}.sz.r{right:0}
+.ring{border-radius:50%;box-shadow:0 0 0 2px var(--s1),0 0 0 4px var(--pr);display:inline-grid;flex:none}
+.mi{max-width:260px;max-height:300px;border-radius:10px;display:block;margin-bottom:3px;cursor:pointer;background:#0002;min-width:120px;min-height:80px}
+.rp{border-left:3px solid var(--ac);background:#0002;border-radius:8px;padding:3px 8px;margin-bottom:4px;font-size:13px;max-height:52px;overflow:hidden}
+.rxs{font-size:13px;margin-top:2px}.m.sys{align-self:center;background:var(--s2);color:var(--mu);font-size:13px;box-shadow:none;cursor:default}
+.rpbar{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--s1);border-top:1px solid var(--bd);border-left:4px solid var(--pr)}
+.ep{display:grid;grid-template-columns:repeat(8,1fr);gap:2px;padding:8px;background:var(--s1);border-top:1px solid var(--bd);max-height:170px;overflow:auto}.ep .ic{font-size:22px;padding:4px}
+.ib>.ic{flex:none;align-self:center}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s;z-index:99}#toast.show{opacity:1}
+@media (max-width:820px){
+ .sh{grid-template-columns:1fr;grid-template-rows:1fr 60px}
+ .rail{grid-row:2;flex-direction:row;justify-content:space-around;border-right:0;border-top:1px solid var(--bd);padding:0 8px}
+ .rail i{display:none}.rail .me{margin:0}
+ .rb{width:auto;height:100%;border-radius:0;flex:1;display:flex;flex-direction:column;gap:1px;align-content:center;justify-content:center}.rb small{display:block;font-size:11px}
+ .lst,.cp{grid-row:1;grid-column:1}.cp{display:none}
+ .sh.inc .cp{display:flex;grid-row:1/3;z-index:5}.sh.inc .rail{display:none}
+ .bk{display:grid}#ml{padding:12px}
+}
+.typing-dots{display:inline-flex;align-items:center;gap:3px;margin-left:4px;vertical-align:middle}.typing-dots i{width:4px;height:4px;border-radius:50%;background:currentColor;display:block;animation:svdot 1s infinite ease-in-out}.typing-dots i:nth-child(2){animation-delay:.15s}.typing-dots i:nth-child(3){animation-delay:.3s}@keyframes svdot{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+</style></head><body><div id="app"></div><div id="toast"></div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyBou0codcva1FdiNljTiIKsnf2dgdPJULY",
+  authDomain: "sanvaad-app-87060.firebaseapp.com",
+  projectId: "sanvaad-app-87060",
+  storageBucket: "sanvaad-app-87060.firebasestorage.app",
+  messagingSenderId: "1091068763271",
+  appId: "1:1091068763271:web:a5e49f656ed7c15ff26c22"
+};
+try {
+  const firebaseApp = initializeApp(firebaseConfig);
+  const auth = getAuth(firebaseApp);
+  const db = getFirestore(firebaseApp);
+  window.sanvaadFirebase = {
+    auth, db,
+    ready: true,
+    signup: (phone, password) => createUserWithEmailAndPassword(auth, phone.replace(/\D/g, "") + "@phone.sanvaad.invalid", password),
+    login: (phone, password) => signInWithEmailAndPassword(auth, phone.replace(/\D/g, "") + "@phone.sanvaad.invalid", password),
+    logout: () => signOut(auth)
+  };
+} catch (e) {
+  window.sanvaadFirebase = { ready: false, error: e };
+  console.error("Sanvaad Firebase initialization failed", e);
+}
+</script>
+<script>
+const app=document.getElementById("app");
+let me,P,PH="",C={},arch=false,spc="#6c4dff",U={},CH={},cur=null,tab="chats",newc=false,q="",tmpAv=null,code=null,codeNum=null;
+/* Local storage "backend": data is shared by all tabs of this browser. */
+function data(){let d={};try{d=JSON.parse(localStorage.getItem("sv")||"{}")}catch(e){}d.users=d.users||{};d.chats=d.chats||{};d.msgs=d.msgs||{};d.contacts=d.contacts||{};d.status=d.status||{};return d}
+function save(d){try{localStorage.setItem("sv",JSON.stringify(d))}catch(e){toast("Could not save. Browser storage is full or blocked.")}}
+const SS=(k,v)=>{try{if(v===undefined)return sessionStorage.getItem(k);if(v===null)sessionStorage.removeItem(k);else sessionStorage.setItem(k,v)}catch(e){}return null};
+function sync(){const d=data();U=d.users;C=d.contacts[me]||{};CH={};for(const id in d.chats){const c=d.chats[id];if(c.m.includes(me)&&(!c.v||c.v.includes(me)))CH[id]=c}if(U[me])P=Object.assign(U[me],{id:me});rl();if(cur)drawMsgs()}
+function msgHtml(m,id,st,o){if(m.y=="call")return`<div class="m sys">${esc(m.x)}</div>`;let b="";const sp='onclick="event.stopPropagation()"';
+if(m.y=="img")b=`<img class="mi" data-mid="${m.m}" onclick="event.stopPropagation();showMedia(this)" alt="Photo">`;else if(m.y=="vid")b=`<video class="mi" data-mid="${m.m}" ${sp} controls preload="metadata" playsinline></video>`;else if(m.y=="aud")b=`<audio data-mid="${m.m}" ${sp} controls preload="none" style="max-width:230px"></audio>`;
+b+=esc(m.x||"");const rp=m.rp?`<div class="rp"><b>${esc(m.rp.f==me?"You":dn(m.rp.f))}</b><br>${esc(m.rp.x)}</div>`:"",rx=m.rx?Object.values(m.rx):[],rxh=rx.length?`<div class="rxs">${[...new Set(rx)].map(e=>e+(rx.filter(z=>z==e).length>1?" "+rx.filter(z=>z==e).length:"")).join(" ")}</div>`:"";
+return`<div class="m ${m.f==me?"me":""}" onclick="mact(${m.t},'${m.f}')" style="cursor:pointer">${rp}${b}<small>${st.some(z=>z.c==id&&z.t==m.t&&z.f==m.f)?"★ ":""}${m.ed?"edited ":""}${fmt(m.t)}${m.f==me?(m.r&&o.rr!==false?' <b style="color:#7fe0ff">✓✓</b>':" ✓"):""}</small>${rxh}</div>`}
+function drawMsgs(){const ml=document.getElementById("ml");if(!ml||!cur)return;const id=lid(me,cur),d=data(),all=d.msgs[id]||[];
+if(S("rr",true)&&!document.hidden){let ch=0;all.forEach(m=>{if(m.f!=me&&!m.r){m.r=1;ch=1}});if(ch)save(d)}
+const st=S("stars",[]),hd=S("hid",[]),a=all.filter(m=>(!m.e||m.e>Date.now())&&!hd.includes(id+"_"+m.t+"_"+m.f)),o=U[cur]||{};
+ml.style.background=(WPS.find(w=>w[0]==S("wp","plain"))||WPS[0])[2];const keep=ml.scrollHeight-ml.scrollTop-ml.clientHeight<80;
+ml.innerHTML=a.map(m=>msgHtml(m,id,st,o)).join("");hyd(ml);if(keep)ml.scrollTop=ml.scrollHeight;drawHs()}
+function drawHs(){const h=document.getElementById("hs");if(!h||!cur)return;const o=U[cur]||{};let ty=null;try{ty=JSON.parse(localStorage.getItem("svty_"+cur)||"null")}catch(e){}
+if(ty&&ty.to==me&&Date.now()-ty.t<3500){h.innerHTML="typing <span class=\"typing-dots\"><i></i><i></i><i></i></span>";h.style.color="var(--pr)";return}h.style.color="";h.textContent=o.hl?"":(Date.now()-(o.ls||0)<45000?"online":(o.ls?"last seen "+new Date(o.ls).toLocaleString([],{day:"numeric",month:"short",hour:"numeric",minute:"2-digit"}):""))}
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ic=p=>'<svg class="i" viewBox="0 0 24 24">'+p+'</svg>';
+const I={chat:ic('<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>'),
+phone:ic('<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>'),
+gear:ic('<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>'),
+plus:ic('<path d="M12 5v14M5 12h14"/>'),back:ic('<path d="M15 18l-6-6 6-6"/>'),send:ic('<path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/>'),
+out:ic('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>'),user:ic('<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'),
+vid:ic('<path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/>'),mic:ic('<path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zM19 10v2a7 7 0 0 1-14 0v-2M12 19v4"/>'),clip:ic('<path d="M21.4 11.1l-9.2 9.2a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/>'),smile:ic('<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/>'),pin:ic('<path d="M12 17v5M9 3h6l-1 7 4 4H6l4-4z"/>'),arc:ic('<path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/>'),stat:ic('<circle cx="12" cy="12" r="9" stroke-dasharray="3 3"/><circle cx="12" cy="12" r="4"/>'),lock:ic('<path d="M5 11h14v10H5zM8 11V7a4 4 0 0 1 8 0v4"/>'),bell:ic('<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/>'),dbi:ic('<path d="M3 5c0-1.1 4-2 9-2s9 .9 9 2-4 2-9 2-9-.9-9-2zM3 5v14c0 1.1 4 2 9 2s9-.9 9-2V5M3 12c0 1.1 4 2 9 2s9-.9 9-2"/>'),help:ic('<circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/>'),users:ic('<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>'),ban:ic('<circle cx="12" cy="12" r="10"/><path d="M4.9 4.9l14.2 14.2"/>'),sun:ic('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>')};
+const logo=s=>`<svg width="${s}" height="${s}" viewBox="0 0 100 100" fill="none" stroke-linecap="round"><defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff6b8a"/><stop offset="1" stop-color="#ffb199"/></linearGradient><linearGradient id="b" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fe3ff"/><stop offset="1" stop-color="#b9a8ff"/></linearGradient></defs><path d="M62 14A38 38 0 1 0 30 82L16 92" stroke="url(#a)" stroke-width="9" stroke-linejoin="round"/><path d="M38 86A38 38 0 1 0 70 18L84 8" stroke="url(#b)" stroke-width="9" stroke-linejoin="round"/><circle cx="50" cy="50" r="7" fill="#fff" stroke="none"/></svg>`;
+const hs=s=>{let a=7;for(const c of s)a=(a*31+c.charCodeAt(0))>>>0;return a};
+const av=(p,s)=>{p=p||{};return p.av&&!(p.hp&&p!==P)?`<img class="av" src="${p.av}" width="${s}" height="${s}" alt="">`:`<div class="av" style="width:${s}px;height:${s}px;font-size:${s*.42}px;background:hsl(${hs(p.nm||"?")%360} 55% 48%)">${esc((p.nm||"?").trim().charAt(0).toUpperCase())}</div>`};
+const fmt=t=>new Date(t).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});
+const lid=(a,b)=>[a,b].sort().join("_");
+function toast(m){const t=document.getElementById("toast");t.textContent=m;t.className="show";clearTimeout(toast.t);toast.t=setTimeout(()=>t.className="",2400)}
+function LS(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){}return null}
+const S=(k,d)=>{try{const v=JSON.parse(localStorage.getItem("svs_"+me)||"{}")[k];return v===undefined?d:v}catch(e){return d}};
+const setS=(k,v)=>{try{const o=JSON.parse(localStorage.getItem("svs_"+me)||"{}");o[k]=v;localStorage.setItem("svs_"+me,JSON.stringify(o))}catch(e){}};
+const WPS=[["plain","Classic","var(--bg)"],["dots","Midnight","radial-gradient(rgba(255,255,255,.09) 1.5px,transparent 1.5px) 0 0/18px 18px,#141c33"],["rose","Rose Dusk","linear-gradient(160deg,#35162b,#8a2f5b 60%,#d65a7b)"],["ocean","Deep Ocean","linear-gradient(#06283d,#1668b0)"],["mint","Fresh Mint","linear-gradient(160deg,#d8f6ea,#9fdcc6)"],["sun","Sunset","linear-gradient(#1b1340,#7a3b8f 55%,#f39a62)"]];
+let lastT=Date.now(),secId=null;
+const dn=k=>C[k]?C[k].n:U[k]?U[k].nm:"+"+k.slice(1);
+const avu=(k,z)=>av(Object.assign({},U[k]||{},{nm:dn(k)}),z);
+const myCC=()=>me.slice(1,-10)||"91";
+const pinHash=p=>{let a=5;for(const c of p+me)a=(a*33+c.charCodeAt(0))>>>0;return String(a)};
+const applyFs=()=>{document.body.style.fontSize={s:"13px",m:"15px",l:"18px"}[S("fs","m")]};
+const SC=["#6c4dff","#ff6b8a","#0f9d76","#e8832a","#2b6fd6","#2a2540"];
+function theme(t){if(t==="auto")document.documentElement.removeAttribute("data-theme");else document.documentElement.dataset.theme=t;LS("th",t)}
+theme(LS("th")||"auto");
+/* ---------- start ---------- */
+setTimeout(()=>{me=SS("svme");PH=SS("svph")||"";if(!me){let l=null;try{l=localStorage.getItem("svlast")}catch(e){}if(l){me=l;try{PH=localStorage.getItem("svlph")||""}catch(e){}if(S("pin"))return lockScreen();me=null;PH=""}return intro()}gate()},0);
+function gate(){const u=data().users[me];if(!u)return setup();P=Object.assign(u,{id:me});if(S("pin")&&!SS("unl"))return lockScreen();boot()}
+function lockScreen(){app.innerHTML=`<div class="pst"><div>${logo(90)}</div><div class="card"><h2>Enter your PIN</h2><input id="pi" type="password" inputmode="numeric" maxlength="6" class="otp" placeholder="••••"><div class="err" id="er"></div><button class="btn" id="ub">Unlock</button></div></div>`;
+const i=document.getElementById("pi"),ok=()=>{if(pinHash(i.value)===S("pin")){SS("svme",me);SS("svph",PH);SS("unl","1");gate()}else{document.getElementById("er").textContent="Wrong PIN.";i.value=""}};document.getElementById("ub").onclick=ok;i.oninput=()=>{if(i.value.length>=4&&pinHash(i.value)===S("pin"))ok()};i.focus()}
+/* ---------- get started + OTP ---------- */
+let authMode="login";
+function intro(){app.innerHTML=`<div class="pst"><div>${logo(118)}</div><h1>Sanvaad</h1><p>Do awaazein, ek rishta.</p><p class="s">Jahan baat poori hoti hai, wahan dil judte hain.</p><div class="card" style="width:min(100%,390px);margin-top:18px;padding:24px"><button class="btn" onclick="authOpen('login')">Log in</button><p style="text-align:center;margin:20px 0 24px;font-size:15px"><a href="#" onclick="event.preventDefault();authOpen('signup')" style="color:#1685ff;font-weight:600;text-decoration:none">Sign up</a></p><p style="text-align:center;margin:8px 0 0;color:var(--mu)">Private chats, photos, voice notes and status updates</p></div></div>`}
+function authOpen(mode){authMode=mode;login()}
+function login(){const signup=authMode==="signup";app.innerHTML=`<div class="pst"><div class="card"><div style="display:flex;justify-content:center;margin-bottom:6px">${logo(64)}</div><h2>${signup?"Sign up":"Log in"}</h2><p>${signup?"Create your Sanvaad account using your phone number and password.":"Enter your phone number and password to access your account."}</p><label>Phone number</label><div class="row2"><input id="cc" value="+91" inputmode="tel" aria-label="Country code"><input id="pn" placeholder="98765 43210" inputmode="numeric" autocomplete="tel-national" aria-label="Phone number"></div><label>Password</label><input id="pw" type="password" minlength="8" autocomplete="${signup?'new-password':'current-password'}" placeholder="At least 8 characters"><div class="err" id="er"></div><button class="btn" id="sb" onclick="firebasePhoneAuth()">${signup?"Create account":"Log in"}</button><p style="text-align:center;margin:14px 0 0;font-size:14px">${signup?'Already have an account? <a href="#" onclick="event.preventDefault();authOpen(\'login\')" style="color:#1685ff;font-weight:700;text-decoration:none">Log in</a>':'Don\'t have an account? <a href="#" onclick="event.preventDefault();authOpen(\'signup\')" style="color:#1685ff;font-weight:700;text-decoration:none">Sign up</a>'}</p></div></div>`;document.getElementById("pn").focus()}
+async function firebasePhoneAuth(){
+ const er=document.getElementById("er"), btn=document.getElementById("sb");
+ const cc=(document.getElementById("cc")?.value||"+91").trim();
+ const local=(document.getElementById("pn")?.value||"").replace(/\D/g,"");
+ const phone=cc+local; const password=document.getElementById("pw")?.value||"";
+ if(!/^\+\d{1,4}$/.test(cc)||local.length!==10){er.textContent="Enter a valid country code and a 10-digit phone number.";return}
+ if(password.length<8){er.textContent="Password must be at least 8 characters.";return}
+ if(!window.sanvaadFirebase?.ready){er.textContent="Firebase is still loading. Please wait a moment and try again.";return}
+ btn.disabled=true; btn.textContent=authMode==="signup"?"Creating account…":"Logging in…";
+ try {
+   if(authMode==="signup") await window.sanvaadFirebase.signup(phone,password);
+   else await window.sanvaadFirebase.login(phone,password);
+   PH=phone; me="u"+phone.replace(/\D/g,""); SS("svme",me); SS("svph",PH); SS("unl","1");
+   try{localStorage.setItem("svlast",me);localStorage.setItem("svlph",PH)}catch(e){}
+   const u=data().users[me];
+   if(!u){setup();} else {P=Object.assign(u,{id:me});boot();}
+ } catch(e) {
+   const code=e?.code||"";
+   if(code.includes("email-already-in-use")) er.textContent="This number already has an account. Please log in instead.";
+   else if(code.includes("invalid-credential")||code.includes("user-not-found")||code.includes("wrong-password")) er.textContent="No account found for this number, or the password is incorrect.";
+   else if(code.includes("weak-password")) er.textContent="Choose a stronger password (at least 8 characters).";
+   else if(code.includes("network-request-failed")) er.textContent="Network error. Check your internet connection.";
+   else er.textContent="Could not authenticate: "+(e?.message||"Please try again.");
+ } finally {if(document.getElementById("sb")){btn.disabled=false;btn.textContent=authMode==="signup"?"Create account":"Log in";}}
+}
+function sendOtp(){const er=document.getElementById("er");const num=document.getElementById("cc").value.trim()+document.getElementById("pn").value.replace(/\D/g,"");
+if(!/^\+\d{10,15}$/.test(num)){er.textContent="Enter a valid number with country code.";return}
+code=String(Math.floor(100000+Math.random()*900000));codeNum=num;otpScreen(num)}
+function otpScreen(num){app.innerHTML=`<div class="pst"><div class="card"><h2>Enter the code</h2><p>For ${esc(num)}</p><p style="background:var(--s2);padding:10px 12px;border-radius:10px;color:var(--tx)">Demo mode: no SMS is sent. Your code is <b>${code}</b></p><input id="otp" class="otp" maxlength="6" inputmode="numeric" autocomplete="one-time-code" placeholder="••••••"><div class="err" id="er"></div><button class="btn" id="vb" onclick="verify()">Verify</button><button class="btn g" id="rs" disabled>Resend in 30s</button><button class="btn g" onclick="login()">Change number</button></div></div>`;
+const o=document.getElementById("otp");o.focus();o.oninput=()=>{o.value=o.value.replace(/\D/g,"");if(o.value.length==6)verify()};
+let n=30;const r=document.getElementById("rs");const t=setInterval(()=>{if(!document.body.contains(r))return clearInterval(t);n--;if(n>0)r.textContent="Resend in "+n+"s";else{clearInterval(t);r.disabled=false;r.textContent="Resend OTP";r.onclick=login}},1000)}
+function verify(){const er=document.getElementById("er"),c=document.getElementById("otp").value;if(c.length<6){er.textContent="Enter all 6 digits.";return}
+if(c!==code){er.textContent="Wrong code. Check and try again.";return}
+PH=codeNum;me="u"+PH.replace(/\D/g,"");SS("svme",me);SS("svph",PH);SS("unl","1");try{localStorage.setItem("svlast",me);localStorage.setItem("svlph",PH)}catch(e){}code=null;const u=data().users[me];if(!u)return setup();P=Object.assign(u,{id:me});boot()}
+/* ---------- profile ---------- */
+function pick(cb){const f=document.createElement("input");f.type="file";f.accept="image/*";f.onchange=()=>{if(!f.files[0])return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const s=Math.min(im.width,im.height),c=document.createElement("canvas");c.width=c.height=512;const x=c.getContext("2d");x.imageSmoothingQuality="high";x.drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,512,512);cb(c.toDataURL("image/jpeg",.92))};im.src=r.result};r.readAsDataURL(f.files[0])};f.click()}
+function setup(u){tmpAv=null;app.innerHTML=`<div class="pst"><div class="card" style="align-items:center"><h2>Set up your profile</h2><div id="pv">${av({nm:"?"},120)}</div><button class="btn g" style="width:auto" onclick="pick(d=>{tmpAv=d;document.getElementById('pv').innerHTML=av({av:d},120)})">Add photo</button><input id="nm" placeholder="Your name" maxlength="40" style="width:100%"><div class="err" id="er"></div><button class="btn" onclick="saveNew()">Continue</button></div></div>`}
+function saveNew(){const n=document.getElementById("nm").value.trim();if(!n){document.getElementById("er").textContent="Enter your name.";return}
+const d=data(),u={nm:n,av:tmpAv||"",ph:PH,t:Date.now()};d.users[me]=u;save(d);P=Object.assign(u,{id:me});boot()}
+/* ---------- main shell ---------- */
+const rb=(t,i,l)=>`<button class="rb" data-t="${t}" title="${l}" onclick="go('${t}')">${i}<small>${l}</small></button>`;
+function boot(){applyFs();{const d=data();if(d.users[me]){d.users[me].ls=Date.now();save(d)}}if(!window.hb)window.hb=setInterval(()=>{const d=data();if(d.users[me]){d.users[me].ls=Date.now();save(d)}},20000);app.innerHTML=`<div class="sh" id="sh"><nav class="rail">${rb("chats",I.chat,"Chats")}${rb("status",I.stat,"Status")}${rb("calls",I.phone,"Calls")}<i></i>${rb("settings",I.gear,"Settings")}<span class="me" title="Profile" onclick="go('settings');prof()">${av(P,34)}</span></nav><section class="lst"><header><div style="display:flex;align-items:center;gap:10px">${logo(30)}<h2 id="lt"></h2></div><button class="ic" id="nb" title="New chat" onclick="newc=!newc;rl()">${I.plus}</button></header><input id="sq" placeholder="Search" oninput="q=this.value;rl()"><div id="lb"></div></section><section class="cp" id="cp"></section></div>`;
+sync();window.addEventListener("storage",e=>{if(e.key=="sv"&&document.getElementById("sh")){const d=data();let n=0;for(const id in d.msgs)if(id.split("_").includes(me)){const l=d.msgs[id].slice(-1)[0];if(l&&l.f!=me&&l.t>lastT){n=1;lastT=l.t}}if(n&&S("snd",true)&&1)beep();sync()}});go("chats")}
+function go(t){stStop();tab=t;newc=false;arch=false;cur=null;q="";document.getElementById("sq").value="";document.getElementById("sh").classList.remove("inc");document.querySelectorAll(".rb").forEach(b=>b.classList.toggle("on",b.dataset.t==t));empty();rl()}
+function empty(){document.getElementById("cp").innerHTML=`<div class="hero"><div style="margin:0 auto 8px">${logo(110)}</div><h2 style="letter-spacing:.4px">Sanvaad</h2><p>A private space for you and your partner.</p><p style="font-size:12px;opacity:.8;margin-top:8px">Messages, photos, voice notes and status updates</p></div>`}
+function rl(){const lb=document.getElementById("lb");if(!lb)return;const lt=document.getElementById("lt"),sq=document.getElementById("sq"),nb=document.getElementById("nb");
+sq.style.display=tab=="calls"||tab=="status"?"none":"";sq.placeholder=tab=="settings"?"Search settings":newc?"Search by name or phone number":"Search chats";nb.style.display=tab=="chats"?"":"none";
+if(tab=="calls"){lt.textContent="Calls";const ks=[...new Set(Object.keys(C).concat(Object.values(CH).map(c=>c.m.find(x=>x!=me))))].filter(k=>U[k]&&!blocked().includes(k));
+lb.innerHTML=(ks.map(k=>`<div class="rw" style="cursor:default">${avu(k,48)}<div><b>${esc(dn(k))}</b><span>Tap to call</span></div><button class="ic" title="Voice call" onclick="callStart('${k}',false)">${I.phone}</button><button class="ic" title="Video call" onclick="callStart('${k}',true)">${I.vid}</button></div>`).join("")||'<div class="empty">Add a contact to start calling.</div>')+'<div class="empty" style="font-size:12px">Calls work between two tabs or windows of this browser for now. Calls between different phones need Firebase.</div>';return}
+if(tab=="status"){lt.textContent="Status";const my=stl(me),o=Object.keys(data().status).filter(k=>k!=me&&!blocked().includes(k)&&U[k]&&stl(k).length&&(C[k]||CH[lid(me,k)]));
+lb.innerHTML=`<button class="rw" onclick="${my.length?`stv('${me}',0)`:"stc()"}"><span class="${my.length?"ring":""}">${av(P,52)}</span><div><b>My status</b><span>${my.length?my.length+" update(s). Tap to view":"Tap to add a status"}</span></div></button><button class="sr" onclick="stc()">${I.plus}<div><b>Add status</b></div></button><div style="padding:8px 16px;color:var(--mu);font-size:13px">Recent updates</div>`+(o.map(k=>`<button class="rw" onclick="stv('${k}',0)"><span class="ring">${avu(k,52)}</span><div><b>${esc(dn(k))}</b><span>${fmt(stl(k).slice(-1)[0].t)}</span></div></button>`).join("")||'<div class="empty">No updates from your contacts.</div>');return}
+if(tab=="settings"){lt.textContent="Settings";const it=[["account",I.user,"Account","Profile, about, delete account"],["privacy",I.lock,"Privacy","PIN, last seen, receipts, disappearing"],["chats",I.chat,"Chats","Theme, wallpaper, export"],["contacts",I.users,"Contacts","Saved contacts"],["stars",I.pin,"Starred messages","Messages you starred"],["notif",I.bell,"Notifications","Sounds, previews"],["access",I.sun,"Accessibility","Font size"],["storage",I.dbi,"Storage and data","Space used, clear chats"],["help",I.help,"Help","About, app version"]].filter(x=>(x[2]+x[3]).toLowerCase().includes(q.toLowerCase()));
+lb.innerHTML=`<div class="set"><button class="rw" onclick="prof()">${av(P,56)}<div><b>${esc(P.nm)}</b><span>${esc(P.ph)}</span></div></button>${it.map(x=>`<button class="sr" onclick="sec('${x[0]}')">${x[1]}<div><b>${x[2]}</b><small>${x[3]}</small></div></button>`).join("")}${!q||"invite a friend".includes(q.toLowerCase())?`<button class="sr" onclick="invite()">${I.users}<div><b>Invite a friend</b></div></button>`:""}${!q||"log out".includes(q.toLowerCase())?`<button class="sr" onclick="out()">${I.out}<div><b>Log out</b></div></button>`:""}</div>`;return}
+lt.textContent=newc?"New chat":(arch?"Archived":"Chats");const s=q.toLowerCase(),dg=q.replace(/\D/g,"");let h="";
+if(newc){h=`<button class="sr" onclick="addForm()">${I.plus}<div><b>New contact</b><small>Save a name and number</small></div></button>`;
+const ks=Object.keys(C).filter(k=>!blocked().includes(k)&&(C[k].n.toLowerCase().includes(s)||(dg.length>2&&k.includes(dg))));
+h+=ks.map(k=>`<button class="rw" onclick="openChat('${k}')">${avu(k,48)}<div><b>${esc(C[k].n)}</b><span>${esc(C[k].p)}${U[k]?"":" · Not on Sanvaad yet"}</span></div></button>`).join("");
+if(dg.length>=6){const k="u"+(dg.length>10?dg:myCC()+dg);if(k!=me&&!C[k])h+=`<button class="sr" onclick="${U[k]?`openChat('${k}')`:`addForm('${dg}')`}">${I.user}<div><b>${U[k]?"Chat with +"+k.slice(1):"Add +"+k.slice(1)+" to contacts"}</b><small>${U[k]?esc(U[k].nm):"Not on Sanvaad yet"}</small></div></button>`}
+if(!ks.length&&dg.length<6)h+='<div class="empty">Search a saved contact, or type a full phone number.</div>'}
+else{const ar=S("arch",[]),pn=S("pins",[]);const a=Object.entries(CH).map(([id,c])=>({o:c.m.find(x=>x!=me),c})).filter(r=>(U[r.o]||C[r.o])&&!blocked().includes(r.o)&&ar.includes(r.o)==arch&&dn(r.o).toLowerCase().includes(s)).sort((x,y)=>(pn.includes(y.o)-pn.includes(x.o))||y.c.t-x.c.t);
+if(!arch&&!s&&ar.length)h+=`<button class="sr" onclick="arch=true;rl()">${I.arc}<div><b>Archived</b><small>${ar.length} chat(s)</small></div></button>`;
+if(arch)h+=`<button class="sr" onclick="arch=false;rl()">${I.back}<div><b>Back to chats</b></div></button>`;
+h+=a.map(r=>`<button class="rw ${cur==r.o?"on":""}" onclick="openChat('${r.o}')">${avu(r.o,48)}<div><b>${pn.includes(r.o)?"📌 ":""}${esc(dn(r.o))}</b><span>${r.c.l?(S("pv",true)?esc(r.c.l):"Message"):"No messages yet"}</span></div><time>${r.c.l?fmt(r.c.t):""}</time></button>`).join("");
+if(!a.length&&!arch)h+='<div class="empty">No chats yet. Tap + to add a contact or search a number.</div>'}
+lb.innerHTML=h}
+function openChat(o){stStop();if(!U[o]){toast("Not on Sanvaad yet. Send them an invite.");return invite()}cur=o;rpl=null;newc=false;const sh=document.getElementById("sh");
+document.getElementById("cp").innerHTML=`<header class="ch"><button class="ic bk" onclick="go('chats')">${I.back}</button><span onclick="info('${o}')" style="cursor:pointer">${avu(o,40)}</span><div style="flex:1;min-width:0;cursor:pointer" onclick="info('${o}')"><b>${esc(dn(o))}</b><small id="hs" style="display:block;color:var(--mu);font-size:12px"></small></div><button class="ic" title="Voice call" onclick="callStart('${o}',false)">${I.phone}</button><button class="ic" title="Video call" onclick="callStart('${o}',true)">${I.vid}</button></header><div id="ml"></div><div id="rpb"></div><div id="epk"></div><form class="ib" onsubmit="return snd(event)"><button type="button" class="ic" title="Emoji" onclick="emo()">${I.smile}</button><button type="button" class="ic" title="Photo or video" onclick="attach()">${I.clip}</button><input id="mi" autocomplete="off" placeholder="Type a message" oninput="typing()"><button type="button" class="ic" title="Voice message" onclick="recS()">${I.mic}</button><button class="ic sd" title="Send">${I.send}</button></form>`;
+sh.classList.add("inc");rl();drawMsgs();document.getElementById("ml").scrollTop=1e9;document.getElementById("mi").focus()}
+function snd(e){e.preventDefault();const i=document.getElementById("mi"),x=i.value.trim();if(!x||!cur)return false;i.value="";try{localStorage.setItem("svty_"+me,JSON.stringify({to:cur,t:0}))}catch(er){}pushMsg({x});return false}
+function prof(){let d=null;document.getElementById("sh").classList.add("inc");document.getElementById("cp").innerHTML=`<header class="ch"><button class="ic bk" onclick="go('settings')">${I.back}</button><b>Profile</b></header><div class="pf"><div id="pv">${av(P,160)}</div><button class="btn g" style="width:auto" id="ph">Change photo</button><input id="nm" value="${esc(P.nm)}" maxlength="40" placeholder="Name"><input id="ab" value="${esc(P.ab||"")}" maxlength="120" placeholder="About (Hey there! I am using Sanvaad.)"><div class="mu">${esc(P.ph)}</div><button class="btn" id="sv">Save</button></div>`;
+document.getElementById("ph").onclick=()=>pick(x=>{d=x;document.getElementById("pv").innerHTML=av({av:x},160)});
+document.getElementById("sv").onclick=async()=>{const n=document.getElementById("nm").value.trim();if(!n)return toast("Enter your name");const z=data();z.users[me].nm=n;z.users[me].ab=document.getElementById("ab").value.trim();if(d)z.users[me].av=d;save(z);sync();toast("Saved")}}
+const blocked=()=>S("blk",[]);
+const OV="position:fixed;inset:0;background:#000a;z-index:100;display:grid;place-items:center;padding:20px";
+function ask(msg,yes,label){const o=document.createElement("div");o.style.cssText=OV;o.innerHTML=`<div class="card" style="gap:14px"><p style="color:var(--tx);font-size:16px">${esc(msg)}</p><div style="display:flex;gap:10px"><button class="btn g" id="no">Cancel</button><button class="btn" id="ok" style="background:var(--er);color:#fff">${esc(label||"Confirm")}</button></div></div>`;document.body.appendChild(o);o.querySelector("#no").onclick=()=>o.remove();o.querySelector("#ok").onclick=()=>{o.remove();yes()}}
+const prev=m=>m.y=="img"?"📷 Photo":m.y=="vid"?"🎥 Video":m.y=="aud"?"🎤 Voice message":m.x||"";
+let rpl=null,rc=null,rch=[],rt0=0,rti=null,lastTy=0;
+const MU={};
+async function murl(id){if(MU[id])return MU[id];const b=await mget(id);return b?(MU[id]=URL.createObjectURL(b)):null}
+function hyd(root){root.querySelectorAll("[data-mid]").forEach(async e=>{const id=e.dataset.mid;if(MU[id])e.src=MU[id];else{const u=await murl(id);if(u&&e.isConnected)e.src=u}})}
+function showMedia(e){const o=document.createElement("div");o.style.cssText=OV+";padding:0;background:#000e";o.onclick=()=>o.remove();o.innerHTML=`<img src="${e.src}" style="max-width:100%;max-height:100%;object-fit:contain">`;document.body.appendChild(o)}
+const prepImg=(fl,mx,q)=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,mx/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);c.toBlob(b=>res(b),"image/jpeg",q)};im.onerror=rej;im.src=r.result};r.readAsDataURL(fl)});
+function pushMsg(o){const id=lid(me,cur),t=Math.max(Date.now(),(pushMsg.lt||0)+1);pushMsg.lt=t;const d=data(),dm=S("dm",0),m=Object.assign({f:me,t},o);if(dm)m.e=t+dm*36e5;if(rpl){m.rp=rpl;rpl=null;showRp()}(d.msgs[id]=d.msgs[id]||[]).push(m);d.chats[id]={m:[me,cur],l:prev(m),t,v:[me,cur]};save(d);sync()}
+async function sendMedia(y,b,x){const id="m"+Date.now()+Math.random().toString(36).slice(2,6);await mput(id,b);pushMsg(Object.assign({y,m:id,x:""},x||{}))}
+function attach(){const f=document.createElement("input");f.type="file";f.multiple=true;f.accept="image/*,video/*";f.setAttribute("aria-label","Choose photos and videos");f.onchange=async()=>{const files=Array.from(f.files||[]);if(!files.length)return;for(const fl of files){try{if(fl.type.startsWith("image/"))await sendMedia("img",await prepImg(fl,2560,.94));else if(fl.type.startsWith("video/")){if(fl.size>30e6){toast("Skipped a video over 30 MB");continue}await sendMedia("vid",fl)}else toast("Unsupported file type")}catch(e){toast("Could not send "+fl.name)}}f.value=""};f.click()}
+function showRp(){const b=document.getElementById("rpb");if(!b||rc)return;b.innerHTML=rpl?`<div class="rpbar"><div style="flex:1;min-width:0"><b>Replying to ${esc(rpl.f==me?"yourself":dn(rpl.f))}</b><div class="mu" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(rpl.x)}</div></div><button class="ic" onclick="rpl=null;showRp()">✕</button></div>`:""}
+async function recS(){if(rc)return;try{const st=await navigator.mediaDevices.getUserMedia({audio:true});rch=[];rc=new MediaRecorder(st);rc.ondataavailable=e=>rch.push(e.data);rc.start();rt0=Date.now();recUI();rti=setInterval(recUI,500)}catch(e){toast("Microphone is not allowed")}}
+function recUI(){const b=document.getElementById("rpb");if(!b)return;if(!rc)return showRp();const s=Math.floor((Date.now()-rt0)/1000);b.innerHTML=`<div class="rpbar"><span style="color:var(--er)">●</span> Recording ${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}<span style="flex:1"></span><button class="btn g" style="width:auto;padding:6px 12px" onclick="recX(0)">Cancel</button><button class="btn" style="width:auto;padding:6px 12px" onclick="recX(1)">Send</button></div>`}
+function recX(send){clearInterval(rti);const r=rc,st=r.stream,dur=Math.round((Date.now()-rt0)/1000);rc=null;r.onstop=async()=>{st.getTracks().forEach(t=>t.stop());if(send&&dur>0)await sendMedia("aud",new Blob(rch,{type:r.mimeType||"audio/webm"}),{d:dur});recUI()};r.stop()}
+function typing(){const n=Date.now();if(n-lastTy>1500){lastTy=n;try{localStorage.setItem("svty_"+me,JSON.stringify({to:cur,t:n}))}catch(e){}}}
+window.addEventListener("storage",e=>{if(e.key&&e.key.startsWith("svty_")){drawHs();setTimeout(drawHs,3600)}});
+const EM="😀😁😂🤣😊😍😘😎🤗🤔😢😭😡🥰😴🤩😇🙃😉😋🥳😅🙄😬👍👎👏🙌🙏💪👋✌️❤️💕💖💔🔥✨🎉🌹🌙☀️🍕☕🎂🎁".match(/\p{Extended_Pictographic}\uFE0F?/gu);
+function emo(){const e=document.getElementById("epk");e.innerHTML=e.innerHTML?"":`<div class="ep">${EM.map(x=>`<button type="button" class="ic" onclick="addE('${x}')">${x}</button>`).join("")}</div>`}
+function addE(x){const i=document.getElementById("mi");i.value+=x;i.focus();typing()}
+function updMsg(id,t,f,fn){const d=data(),m=(d.msgs[id]||[]).find(x=>x.t==t&&x.f==f);if(!m)return;fn(m);save(d);sync()}
+function editMsg(id,t,f,old){const o=document.createElement("div");o.style.cssText=OV;o.innerHTML=`<div class="card"><h2>Edit message</h2><input id="ei" value="${esc(old)}" maxlength="1000"><div style="display:flex;gap:10px"><button class="btn g" id="no">Cancel</button><button class="btn" id="ok">Save</button></div></div>`;document.body.appendChild(o);const i=o.querySelector("#ei");i.focus();o.querySelector("#no").onclick=()=>o.remove();
+o.querySelector("#ok").onclick=()=>{const v=i.value.trim();if(!v)return;o.remove();updMsg(id,t,f,x=>{x.x=v;x.ed=1});const d=data(),l=(d.msgs[id]||[]).slice(-1)[0];if(l&&l.t==t&&d.chats[id]){d.chats[id].l=v;save(d);sync()}}}
+function mact(t,f){const id=lid(me,cur),m=(data().msgs[id]||[]).find(x=>x.t==t&&x.f==f);if(!m||m.y=="call")return;const st=S("stars",[]).some(z=>z.c==id&&z.t==t&&z.f==f),o=document.createElement("div");o.style.cssText=OV;o.onclick=e=>{if(e.target==o)o.remove()};
+const acts=[["reply","Reply"]].concat(f==me&&!m.y?[["edit","Edit"]]:[],[["star",st?"Unstar message":"Star message"]],!m.y&&m.x?[["copy","Copy"]]:[],[["me","Delete for me"]],f==me?[["all","Delete for everyone"]]:[]);
+o.innerHTML=`<div class="card" style="padding:8px;gap:0"><div style="display:flex;justify-content:space-around;padding:8px 4px 10px">${["❤️","😂","😮","😢","👍","🙏"].map(e=>`<button class="ic" data-r="${e}" style="font-size:26px">${e}</button>`).join("")}</div>${acts.map(a=>`<button class="sr" data-a="${a[0]}">${a[1]}</button>`).join("")}</div>`;document.body.appendChild(o);
+o.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{o.remove();updMsg(id,t,f,x=>{x.rx=x.rx||{};if(x.rx[me]==b.dataset.r)delete x.rx[me];else x.rx[me]=b.dataset.r})});
+o.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{const a=b.dataset.a;o.remove();if(a=="reply"){rpl={t,f,x:prev(m)};showRp();document.getElementById("mi").focus()}
+if(a=="edit")editMsg(id,t,f,m.x);if(a=="star")star(t,f);if(a=="copy"){try{navigator.clipboard.writeText(m.x);toast("Copied")}catch(e){toast("Could not copy")}}
+if(a=="me"){setS("hid",S("hid",[]).concat(id+"_"+t+"_"+f));drawMsgs();toast("Deleted for you")}
+if(a=="all")ask("Delete this message for everyone?",()=>{const d=data();d.msgs[id]=(d.msgs[id]||[]).filter(x=>!(x.t==t&&x.f==f));const l=d.msgs[id].slice(-1)[0];if(d.chats[id])d.chats[id].l=l?prev(l):"";save(d);sync();toast("Message deleted")},"Delete")})}
+function delChat(o){ask("Delete this chat? Messages are removed only for you.",()=>{const id=lid(me,o),d=data();setS("hid",S("hid",[]).concat((d.msgs[id]||[]).map(m=>id+"_"+m.t+"_"+m.f)));if(d.chats[id]){const v=(d.chats[id].v||d.chats[id].m).filter(x=>x!=me);if(v.length)d.chats[id].v=v;else{delete d.chats[id];delete d.msgs[id]}}save(d);sync();go("chats");toast("Chat deleted")},"Delete")}
+function rmC0(k){const d=data();if(d.contacts[me])delete d.contacts[me][k];save(d);sync()}
+function blk(o){ask("Block "+dn(o)+"? They will be hidden from your chats.",()=>{setS("blk",blocked().concat(o));go("chats");toast("Blocked")},"Block")}
+function invite(){const t="Join me on Sanvaad: "+location.href.split("#")[0];if(navigator.share)navigator.share({text:t}).catch(()=>{});else{try{navigator.clipboard.writeText(t);toast("Invite link copied")}catch(e){toast(t)}}}
+function beep(){try{const c=new AudioContext(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=880;g.gain.value=.08;o.start();o.stop(c.currentTime+.12)}catch(e){}}
+const tg=(on,l,f)=>`<button class="tg ${on?"on":""}" onclick="${f}"><span>${l}</span><i class="sw"></i></button>`;
+function flip(k,d){setS(k,!S(k,d));sec(secId)}
+function hp(){const d=data();d.users[me].hp=!d.users[me].hp;save(d);sync();sec(secId)}
+function unb(k){setS("blk",blocked().filter(x=>x!=k));sec("privacy");rl()}
+function wp(id){setS("wp",id);sec("chats")}
+function clearAll(){ask("Delete all your chats and messages?",()=>{const d=data();for(const id in d.chats)if(d.chats[id].m.includes(me)){delete d.chats[id];delete d.msgs[id]}save(d);sync();toast("Chats cleared");sec("storage")},"Delete all")}
+function delAcc(){ask("Delete your account permanently? This cannot be undone.",()=>{const d=data();for(const id in d.chats)if(d.chats[id].m.includes(me)){delete d.chats[id];delete d.msgs[id]}delete d.users[me];delete d.contacts[me];delete d.status[me];save(d);try{localStorage.removeItem("svs_"+me)}catch(e){}out()},"Delete account")}
+function info(o){const u=U[o];document.getElementById("cp").innerHTML=`<header class="ch"><button class="ic bk" onclick="openChat('${o}')">${I.back}</button><b>Contact info</b></header><div class="pf">${avu(o,160)}<h2 style="margin:0">${esc(dn(o))}</h2><div class="mu">${esc(u.ph)}</div><div style="text-align:center"><b>About</b><br>${esc(u.ab||"Hey there! I am using Sanvaad.")}</div>${C[o]?`<button class="btn g" onclick="ask('Remove this contact?',()=>{rmC0('${o}');openChat('${o}')},'Remove')">Remove contact</button>`:`<button class="btn" onclick="addForm('${u.ph.replace(/\D/g,"")}')">Save to contacts</button>`}<button class="btn g" onclick="pinC('${o}')">Pin / unpin chat</button><button class="btn g" onclick="arcC('${o}')">Archive / unarchive chat</button><button class="btn g" onclick="delChat('${o}')">Delete chat</button><button class="btn g" style="color:var(--er)" onclick="blk('${o}')">Block</button></div>`;document.getElementById("sh").classList.add("inc")}
+function addForm(pre){newc=false;const cc=pre&&pre.length>10?pre.slice(0,-10):myCC(),nu=pre?pre.slice(-10):"";document.getElementById("cp").innerHTML=`<header class="ch"><button class="ic bk" onclick="go('chats')">${I.back}</button><b>New contact</b></header><div class="pf"><input id="cn" placeholder="Name" maxlength="40"><div class="row2" style="width:100%"><input id="cc2" value="+${cc}" inputmode="tel"><input id="cn2" placeholder="Phone number" inputmode="numeric" value="${esc(nu)}"></div><div class="err" id="er"></div><button class="btn" onclick="addC()">Save contact</button></div>`;document.getElementById("sh").classList.add("inc")}
+function addC(){const g=x=>document.getElementById(x).value,n=g("cn").trim(),cc=g("cc2").replace(/\D/g,""),p=g("cn2").replace(/\D/g,""),er=document.getElementById("er");if(!n)return er.textContent="Enter a name.";if(p.length<7||!cc)return er.textContent="Enter a valid phone number.";const k="u"+cc+p;if(k==me)return er.textContent="That is your own number.";
+const d=data(),id=lid(me,k);(d.contacts[me]=d.contacts[me]||{})[k]={n,p:"+"+cc+p};if(d.users[k]){if(!d.chats[id])d.chats[id]={m:[me,k],l:"",t:Date.now(),v:[me]};else if(d.chats[id].v&&!d.chats[id].v.includes(me))d.chats[id].v.push(me)}save(d);sync();go("chats");if(U[k])openChat(k);else toast(n+" saved. Not on Sanvaad yet.")}
+const stl=k=>(data().status[k]||[]).filter(x=>x.t>Date.now()-864e5);
+let stq=[],sti=0,stT=null,stTok=0,stPz=0,stDn=0,stV=null;
+function stStop(){clearInterval(stT);stT=null}
+const idb=()=>new Promise((res,rej)=>{const r=indexedDB.open("svm",1);r.onupgradeneeded=()=>r.result.createObjectStore("m");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+async function mput(k,b){const d=await idb();return new Promise((res,rej)=>{const t=d.transaction("m","readwrite");t.objectStore("m").put(b,k);t.oncomplete=res;t.onerror=()=>rej(t.error)})}
+async function mget(k){const d=await idb();return new Promise((res,rej)=>{const r=d.transaction("m").objectStore("m").get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+const stBar=a=>`<div class="seg"><button class="${a=="t"?"on":""}" onclick="stc()">Text</button><button class="${a=="m"?"on":""}" onclick="pickM()">Photos &amp; videos</button></div>`;
+const stHead=`<header class="ch"><button class="ic bk" onclick="go('status')">${I.back}</button><b>New status</b></header>`;
+function stc(){stq=[];spc=SC[0];document.getElementById("cp").innerHTML=stHead+`<div class="dp">${stBar("t")}<div id="sp" style="background:${spc};color:#fff;margin:0 16px 16px;border-radius:16px;min-height:220px;display:grid;place-items:center;padding:20px"><textarea id="sx" maxlength="200" rows="4" placeholder="Type a status" style="background:none;border:0;color:#fff;text-align:center;font:inherit;font-size:22px;resize:none;width:100%;outline:0"></textarea></div><div class="seg">${SC.map(c=>`<button style="background:${c};height:34px" onclick="spc='${c}';document.getElementById('sp').style.background='${c}'"></button>`).join("")}</div><button class="btn" onclick="stp()">Post status</button></div>`;document.getElementById("sh").classList.add("inc")}
+function pickM(){const f=document.createElement("input");f.type="file";f.multiple=true;f.accept="image/*,video/*";f.setAttribute("aria-label","Choose status photos and videos");f.onchange=async()=>{const files=Array.from(f.files||[]);if(!files.length)return;for(const fl of files){try{if(fl.type.startsWith("image/"))stq.push({y:"img",b:await prepImg(fl,1920,.92),cap:""});else if(fl.type.startsWith("video/")){if(fl.size>30e6){toast("Skipped a video over 30 MB");continue}stq.push({y:"vid",b:fl,cap:""})}else toast("Unsupported file type")}catch(e){toast("Could not read "+fl.name)}}f.value="";if(stq.length)stPrev();else toast("No supported media selected")};f.click()}
+function stRm(j){stq.splice(j,1);sti=0;stPrev()}
+function stPrev(){if(!stq.length)return stc();sti=Math.min(sti,stq.length-1);const z=stq[sti];stq.forEach(q=>q.u=q.u||URL.createObjectURL(q.b));const v=z.y=="vid";
+document.getElementById("cp").innerHTML=stHead+`<div class="dp">${stBar("m")}<div class="sc" style="background:#000;min-height:300px;margin:0 16px;border-radius:16px">${v?`<video src="${z.u}" controls muted playsinline></video>`:`<img src="${z.u}">`}</div><div style="display:flex;gap:8px;padding:12px 16px;overflow-x:auto">${stq.map((q,j)=>`<div style="position:relative;flex:none;width:60px;height:60px;border-radius:10px;overflow:hidden;cursor:pointer;outline:${j==sti?"3px solid var(--pr)":"0"}" onclick="sti=${j};stPrev()">${q.y=="vid"?`<video src="${q.u}" muted style="width:100%;height:100%;object-fit:cover"></video>`:`<img src="${q.u}" style="width:100%;height:100%;object-fit:cover">`}<span onclick="event.stopPropagation();stRm(${j})" style="position:absolute;top:0;right:0;background:#000a;color:#fff;font-size:11px;padding:1px 5px">✕</span></div>`).join("")}<button class="ic" style="width:60px;height:60px;border-radius:10px;border:1px dashed var(--bd);flex:none" title="Add more" onclick="pickM()">${I.plus}</button></div><div style="padding:0 16px"><input id="sx" maxlength="120" placeholder="Add a caption" value="${esc(z.cap||"")}" oninput="stq[sti].cap=this.value"></div>${v?'<div class="mu" style="padding:8px 16px 0">Viewers see the first 10 seconds of a video.</div>':""}<button class="btn" onclick="stp()">Post ${stq.length} status${stq.length>1?"es":""}</button></div>`;document.getElementById("sh").classList.add("inc")}
+async function stp(){const d0=Date.now();let items=[];
+if(stq.length){let i=0;for(const q of stq){const id="m"+Date.now()+Math.random().toString(36).slice(2,6);try{await mput(id,q.b)}catch(e){return toast("Could not save media: "+e.message)}items.push({x:(q.cap||"").trim(),m:id,y:q.y,t:d0+i++,v:[]})}}
+else{const cap=(document.getElementById("sx")||{value:""}).value.trim();if(!cap)return toast("Type something first");items=[{x:cap,c:spc,t:d0,v:[]}]}
+const d=data();d.status[me]=(d.status[me]||[]).filter(z=>z.t>Date.now()-864e5).concat(items);save(d);stq=[];sync();go("status");toast("Status posted")}
+function stH(on){if(on)stDn=Date.now();stPz=on;if(stV){if(on)stV.pause();else stV.play().catch(()=>{})}}
+function stNav(k,i){if(Date.now()-stDn>300)return;stv(k,i)}
+function stSeen(t){stPz=1;if(stV)stV.pause();const z=stl(me).find(x=>x.t==t)||{},v=z.v||[],o=document.createElement("div");o.style.cssText=OV;const close=()=>{o.remove();stPz=0;if(stV)stV.play().catch(()=>{})};o.onclick=e=>{if(e.target==o)close()};
+o.innerHTML=`<div class="card" style="padding:8px 0"><h2 style="padding:8px 16px">Viewed by ${v.length}</h2>${v.map(k=>`<div class="rw" style="cursor:default">${avu(k,40)}<div><b>${esc(dn(k))}</b></div></div>`).join("")||'<div class="empty">No views yet.</div>'}</div>`;document.body.appendChild(o)}
+async function stv(k,i){stStop();const a=stl(k);i=i||0;if(!a.length||i>=a.length)return go("status");if(i<0)i=0;const z=a[i],my=++stTok;stPz=0;stV=null;
+if(k!=me){const d=data(),it=(d.status[k]||[]).find(x=>x.t==z.t);if(it&&!(it.v||[]).includes(me)){(it.v=it.v||[]).push(me);save(d)}}
+const nv=(z.v||[]).length;
+document.getElementById("cp").innerHTML=`<div class="sv"><div class="sb">${a.map((_,j)=>`<i><b id="sb${j}" style="width:${j<i?100:0}%"></b></i>`).join("")}</div><div class="sh2"><button class="ic" style="color:#fff" onclick="go('status')">${I.back}</button><span style="display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:#ffffff20;padding:3px">${logo(24)}</span>${k==me?av(P,38):avu(k,38)}<div style="flex:1"><b>${k==me?"My status":esc(dn(k))}</b><small style="display:block;opacity:.8;font-size:12px">${fmt(z.t)}</small></div>${k==me?`<button class="ic" style="color:#fff" title="Delete status" onclick="stdAsk(${z.t})">✕</button>`:""}</div><div class="sc" id="sc" style="background:${z.c||"#000"}">${z.m?"":esc(z.x)}</div>${(z.m&&z.x)||k==me?`<div class="cap">${z.m?esc(z.x):""}${k==me?`<div><button class="btn g" style="color:#fff;width:auto;padding:6px 14px" onclick="stSeen(${z.t})">👁 ${nv} view${nv==1?"":"s"}</button></div>`:""}</div>`:""}<div class="sz l" onpointerdown="stH(1)" onpointerup="stH(0)" onpointerleave="stH(0)" onclick="stNav('${k}',${i-1})"></div><div class="sz r" onpointerdown="stH(1)" onpointerup="stH(0)" onpointerleave="stH(0)" onclick="stNav('${k}',${i+1})"></div></div>`;
+document.getElementById("sh").classList.add("inc");let dur=10000;
+if(z.m){let b=null;try{b=await mget(z.m)}catch(e){}if(my!==stTok)return;const sc=document.getElementById("sc");if(!sc)return;if(!b){sc.textContent="Media unavailable. This file may have been cleared from this browser."}else{const u=URL.createObjectURL(b);if(z.y=="vid"){const vd=document.createElement("video");stV=vd;vd.src=u;vd.controls=true;vd.playsInline=true;vd.preload="auto";vd.style.cssText="width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain";vd.onloadedmetadata=()=>{if(vd.duration)dur=Math.min(10000,vd.duration*1000)};vd.onerror=()=>{sc.textContent="Could not play this video in this browser."};sc.appendChild(vd);vd.play().catch(()=>{vd.muted=true;vd.play().catch(()=>{})})}else{const im=new Image();im.onload=()=>{im.style.cssText="width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain"};im.onerror=()=>{sc.textContent="Could not display this photo."};im.src=u;sc.appendChild(im)}}}
+let el=0;const bar=document.getElementById("sb"+i);stT=setInterval(()=>{if(!document.getElementById("sc"))return stStop();if(stPz)return;el+=100;const p=Math.min(100,el/dur*100);if(bar)bar.style.width=p+"%";if(p>=100){stStop();stv(k,i+1)}},100)}
+function stdAsk(t){stStop();ask("Delete this status?",()=>std(t),"Delete")}
+function std(t){const d=data();d.status[me]=(d.status[me]||[]).filter(x=>x.t!=t);save(d);sync();stv(me,0)}
+function star(t,f){const id=lid(me,cur),m=(data().msgs[id]||[]).find(x=>x.t==t&&x.f==f);if(!m)return;const st=S("stars",[]),i=st.findIndex(z=>z.c==id&&z.t==t&&z.f==f);if(i>=0){st.splice(i,1);toast("Unstarred")}else{st.push({c:id,t,f,x:m.x});toast("Starred")}setS("stars",st);drawMsgs()}
+function pinC(o){let p=S("pins",[]);const was=p.includes(o);p=was?p.filter(x=>x!=o):p.concat(o);setS("pins",p);toast(was?"Chat unpinned":"Chat pinned");rl()}
+function arcC(o){let a=S("arch",[]);const was=a.includes(o);a=was?a.filter(x=>x!=o):a.concat(o);setS("arch",a);toast(was?"Chat unarchived":"Chat archived");go("chats")}
+function hl(){const d=data();d.users[me].hl=!d.users[me].hl;save(d);sync();sec("privacy")}
+function rrT(){const v=!S("rr",true);setS("rr",v);const d=data();d.users[me].rr=v;save(d);sync();sec("privacy")}
+function setDm(h){setS("dm",h);sec("privacy")}
+function setFs(v){setS("fs",v);applyFs();sec("access")}
+function setPin(){const v=document.getElementById("np").value;if(!/^\d{4,6}$/.test(v))return document.getElementById("er").textContent="Use 4 to 6 digits.";setS("pin",pinHash(v));toast("PIN saved");sec("privacy")}
+function rmPin(){setS("pin",null);toast("PIN removed");sec("privacy")}
+function rmC(k){ask("Remove this contact?",()=>{rmC0(k);sec("contacts");toast("Contact removed")},"Remove")}
+function exp(){const d=data();let t="";for(const id in d.msgs)if(id.split("_").includes(me)){const o="u"+id.split("_").find(x=>x!="u"+me.slice(1)&&x!=me).slice(1);t+="--- Chat with "+dn(o)+" ---\n"+d.msgs[id].map(m=>new Date(m.t).toLocaleString()+" "+(m.f==me?"Me":dn(m.f))+": "+m.x).join("\n")+"\n\n"}
+const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t||"No chats yet."],{type:"text/plain"}));a.download="sanvaad-chats.txt";a.click()}
+const segB=(arr,cur_,f)=>`<div class="seg">${arr.map(x=>`<button class="${cur_==x[0]?"on":""}" onclick="${f}(${JSON.stringify(x[0]).replace(/"/g,"'")})">${x[1]}</button>`).join("")}</div>`;
+function sec(id){secId=id;const T={account:"Account",privacy:"Privacy",chats:"Chats",contacts:"Contacts",stars:"Starred messages",notif:"Notifications",access:"Accessibility",storage:"Storage and data",help:"Help",pin:"App PIN"};let b="";
+if(id=="account")b=`<button class="rw" onclick="prof()">${av(P,56)}<div><b>${esc(P.nm)}</b><span>${esc(P.ab||"Hey there! I am using Sanvaad.")}</span></div></button><div class="tg" style="cursor:default"><span>Phone number</span><b>${esc(P.ph)}</b></div><button class="btn" onclick="prof()">Edit name, about and photo</button>`;
+if(id=="privacy")b=tg(!P.hp,"Show my profile photo to others","hp()")+tg(!P.hl,"Show my last seen and online","hl()")+tg(S("rr",true),"Read receipts","rrT()")+`<button class="sr" onclick="sec('pin')">${I.lock}<div><b>App PIN</b><small>${S("pin")?"On. Asked when you reopen the app":"Off"}</small></div></button><h3>Disappearing messages (new messages)</h3>`+segB([[0,"Off"],[24,"24 hours"],[168,"7 days"]],S("dm",0),"setDm")+`<h3>Blocked contacts</h3>`+(blocked().map(k=>U[k]?`<div class="rw" style="cursor:default">${avu(k,40)}<div><b>${esc(dn(k))}</b></div><button class="btn" style="margin:0;padding:7px 12px" onclick="unb('${k}')">Unblock</button></div>`:"").join("")||'<div class="empty">No blocked contacts.</div>');
+if(id=="pin")b=`<div class="pf" style="max-width:none;align-items:stretch"><p class="mu">Set a 4 to 6 digit PIN. After you close the app, you open it again with the PIN instead of an OTP.</p><input id="np" type="password" inputmode="numeric" maxlength="6" placeholder="New PIN"><div class="err" id="er"></div><button class="btn" style="margin:0" onclick="setPin()">Save PIN</button>${S("pin")?'<button class="btn d" style="margin:0" onclick="rmPin()">Remove PIN</button>':""}</div>`;
+if(id=="chats")b=`<h3>Theme</h3>`+segB([["auto","Auto"],["light","Light"],["dark","Dark"]],LS("th")||"auto","setTh")+`<h3>Chat wallpaper</h3><div class="wpg">${WPS.map(w=>`<div class="wc ${S("wp","plain")==w[0]?"on":""}" style="background:${w[2]}" onclick="wp('${w[0]}')">${w[1]}</div>`).join("")}</div><button class="btn" onclick="exp()">Export all chats (.txt)</button><div class="mu" style="padding:0 16px">Tip: tap a message for star, copy and delete.</div>`;
+if(id=="contacts")b=Object.keys(C).map(k=>`<div class="rw" style="cursor:default">${avu(k,40)}<div><b>${esc(C[k].n)}</b><span>${esc(C[k].p)}</span></div><button class="btn" style="margin:0;padding:7px 12px" onclick="rmC('${k}')">Remove</button></div>`).join("")||'<div class="empty">No contacts yet. Use + in Chats to add one.</div>';
+if(id=="stars")b=S("stars",[]).map(z=>{const p=z.c.split("_").find(x=>x!=me);return`<button class="sr" onclick="go('chats');openChat('${p}')"><div><b>${esc(z.f==me?"Me":dn(z.f))} in ${esc(dn(p))}</b><small>${esc(z.x)}</small></div></button>`}).join("")||'<div class="empty">No starred messages. Tap a message for star, copy and delete options.</div>';
+if(id=="notif")b=tg(S("snd",true),"Message sounds","flip('snd',true)")+tg(S("pv",true),"Show message preview in chat list","flip('pv',true);rl()");
+if(id=="access")b=`<h3>Font size</h3>`+segB([["s","Small"],["m","Medium"],["l","Large"]],S("fs","m"),"setFs");
+if(id=="storage"){let kb=0;try{kb=Math.round((localStorage.getItem("sv")||"").length/1024)}catch(e){}b=`<div class="tg" style="cursor:default"><span>Space used by Sanvaad</span><b>${kb} KB</b></div><button class="btn d" onclick="clearAll()">Clear all chats</button>`}
+if(id=="help")b=`<div class="tg" style="cursor:default"><span>About Sanvaad</span><b>For girlfriend &amp; boyfriend</b></div><div class="tg" style="cursor:default"><span>Help center</span><b>Coming soon</b></div><div class="tg" style="cursor:default"><span>App version</span><b>1.1 (local demo)</b></div>`;
+document.getElementById("cp").innerHTML=`<header class="ch"><button class="ic bk" onclick="go('settings')">${I.back}</button><b>${T[id]}</b></header><div class="dp">${b}</div>`;document.getElementById("sh").classList.add("inc")}
+function setTh(t){theme(t);sec("chats")}
+/* ---------- calls ---------- */
+const bc=typeof BroadcastChannel!="undefined"?new BroadcastChannel("svcall"):null;
+let pc=null,lsm=null,rsm=null,peer=null,pend=null,iceQ=[],cT0=0,cTi=null,cVid=false,cDir=0,rIv=null;
+const sig=m=>{if(bc)bc.postMessage(Object.assign({from:me,to:peer},m))};
+function callUI(txt,mode){let o=document.getElementById("call");if(!o){o=document.createElement("div");o.id="call";o.style.cssText="position:fixed;inset:0;z-index:120;background:linear-gradient(160deg,#1a1245,#4a2fc2 55%,#ff6b8a);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px";document.body.appendChild(o)}
+const rb="width:56px;height:56px;background:#ffffff33;color:#fff",eb=c=>`width:64px;height:64px;background:${c};color:#fff`;
+o.innerHTML=`<video id="rv" autoplay playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;${cVid?"":"display:none"}"></video><video id="lv" autoplay playsinline muted style="position:absolute;right:16px;top:16px;width:110px;border-radius:12px;z-index:2;${cVid?"":"display:none"}"></video><div style="z-index:2;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px">${avu(peer,110)}<h2 style="margin:6px 0 0">${esc(dn(peer))}</h2><div id="cst">${txt}</div></div><div style="z-index:2;display:flex;gap:18px;margin-top:20px">${mode=="in"?`<button class="ic" style="${eb("#e5384f")}" title="Decline" onclick="callEnd(1)">${I.phone}</button><button class="ic" style="${eb("#1fb86a")}" title="Answer" onclick="callAcc()">${I.phone}</button>`:`<button class="ic" style="${rb}" title="Mute" onclick="cTog('a')">${I.mic}</button>${cVid?`<button class="ic" style="${rb}" title="Camera" onclick="cTog('v')">${I.vid}</button>`:""}<button class="ic" style="${eb("#e5384f")}" title="End call" onclick="callEnd(1)">${I.phone}</button>`}</div>`;
+if(lsm)document.getElementById("lv").srcObject=lsm;if(rsm)document.getElementById("rv").srcObject=rsm}
+function cTog(k){if(!lsm)return;(k=="a"?lsm.getAudioTracks():lsm.getVideoTracks()).forEach(t=>t.enabled=!t.enabled);toast(k=="a"?"Mute toggled":"Camera toggled")}
+async function callMedia(){lsm=await navigator.mediaDevices.getUserMedia({audio:true,video:cVid})}
+function mkPc(){pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"}]});lsm.getTracks().forEach(t=>pc.addTrack(t,lsm));pc.onicecandidate=e=>{if(e.candidate)sig({t:"ice",c:e.candidate})};
+pc.ontrack=e=>{rsm=e.streams[0];const r=document.getElementById("rv");if(r)r.srcObject=rsm};
+pc.onconnectionstatechange=()=>{if(!pc)return;if(pc.connectionState=="connected"){cT0=Date.now();clearInterval(cTi);cTi=setInterval(()=>{const s=document.getElementById("cst"),d=Math.floor((Date.now()-cT0)/1000);if(s)s.textContent=Math.floor(d/60)+":"+String(d%60).padStart(2,"0")},1000)}else if(pc.connectionState=="failed"){callEnd(0);toast("Call failed")}}}
+async function callStart(o,v){if(pc||pend)return toast("You are already in a call");if(!bc||!navigator.mediaDevices)return toast("Calls are not supported in this browser");peer=o;cVid=v;cDir=1;callUI("Calling…","out");try{await callMedia();callUI("Calling…","out");mkPc();const of=await pc.createOffer();await pc.setLocalDescription(of);sig({t:"offer",sdp:of,v})}catch(e){toast("Could not start the call: "+e.message);callEnd(0)}}
+async function callAcc(){clearInterval(rIv);cVid=pend.v;callUI("Connecting…","out");try{await callMedia();callUI("Connecting…","out");mkPc();await pc.setRemoteDescription(pend.sdp);iceQ.forEach(c=>pc.addIceCandidate(c).catch(()=>{}));iceQ=[];const an=await pc.createAnswer();await pc.setLocalDescription(an);sig({t:"answer",sdp:an});pend=null}catch(e){toast("Could not answer: "+e.message);callEnd(1)}}
+function callEnd(notify){clearInterval(cTi);clearInterval(rIv);if(notify&&peer)sig({t:(pend&&!pc)?"decline":"end"});
+if(cDir==1&&peer&&U[peer]){const dur=cT0?Math.round((Date.now()-cT0)/1000):0,d=data(),id=lid(me,peer),t=Date.now(),x=(cVid?"📹 Video call":"📞 Voice call")+(dur?" · "+Math.floor(dur/60)+":"+String(dur%60).padStart(2,"0"):" · Not answered");(d.msgs[id]=d.msgs[id]||[]).push({f:me,t,x,y:"call"});d.chats[id]={m:[me,peer],l:x,t,v:[me,peer]};save(d);sync()}
+if(pc){try{pc.close()}catch(e){}}if(lsm)lsm.getTracks().forEach(t=>t.stop());pc=null;lsm=null;rsm=null;pend=null;iceQ=[];cT0=0;peer=null;cDir=0;const o=document.getElementById("call");if(o)o.remove()}
+if(bc)bc.onmessage=async e=>{const m=e.data;if(!me||m.to!==me)return;
+if(m.t=="offer"){if(pc||pend)return bc.postMessage({from:me,to:m.from,t:"busy"});peer=m.from;pend=m;cVid=m.v;cDir=0;callUI("Incoming "+(m.v?"video":"voice")+" call…","in");clearInterval(rIv);rIv=setInterval(beep,1400);beep()}
+else if(m.t=="answer"&&pc){await pc.setRemoteDescription(m.sdp);iceQ.forEach(c=>pc.addIceCandidate(c).catch(()=>{}));iceQ=[]}
+else if(m.t=="ice"){if(pc&&pc.remoteDescription)pc.addIceCandidate(m.c).catch(()=>{});else iceQ.push(m.c)}
+else if(m.t=="end"||m.t=="busy"||m.t=="decline"){if(m.from!==peer)return;const t=m.t;callEnd(0);toast(t=="busy"?"They are on another call":t=="decline"?"Call declined":"Call ended")}};
+{const lk=document.createElement("link");lk.rel="icon";lk.href="data:image/svg+xml,"+encodeURIComponent(logo(64).replace("<svg ",'<svg xmlns="http://www.w3.org/2000/svg" '));document.head.appendChild(lk)}
+function out(){SS("svme",null);SS("svph",null);SS("unl",null);try{localStorage.removeItem("svlast")}catch(e){}location.reload()}
+</script></body></html>
