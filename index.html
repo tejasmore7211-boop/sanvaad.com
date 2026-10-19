@@ -91,7 +91,7 @@ svg.i{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stro
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, deleteDoc, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 const firebaseConfig = {
   apiKey: "AIzaSyBou0cocdva1FdiNljTiIKsnf2dgdPjULY",
   authDomain: "sanvaad-app-87060.firebaseapp.com",
@@ -107,6 +107,15 @@ try {
   window.sanvaadFirebase = {
     auth, db,
     ready: true,
+    cloud: {
+      user: () => new Promise(r => { const un = onAuthStateChanged(auth, u => { un(); r(u); }); }),
+      setUser: (id, o) => setDoc(doc(db, "users", id), o, { merge: true }),
+      getUser: id => getDoc(doc(db, "users", id)),
+      setMsg: (k, o) => setDoc(doc(db, "messages", k), o),
+      delMsg: k => deleteDoc(doc(db, "messages", k)),
+      onUsers: (cb, er) => onSnapshot(collection(db, "users"), cb, er),
+      onMsgs: (me, cb, er) => onSnapshot(query(collection(db, "messages"), where("p", "array-contains", me)), cb, er)
+    },
     signup: (phone, password) => createUserWithEmailAndPassword(auth, phone.replace(/\D/g, "") + "@phone.sanvaad.invalid", password),
     login: (phone, password) => signInWithEmailAndPassword(auth, phone.replace(/\D/g, "") + "@phone.sanvaad.invalid", password),
     logout: () => signOut(auth)
@@ -121,7 +130,28 @@ const app=document.getElementById("app");
 let me,P,PH="",C={},arch=false,spc="#6c4dff",U={},CH={},cur=null,tab="chats",newc=false,q="",tmpAv=null,code=null,codeNum=null;
 /* Local storage "backend": data is shared by all tabs of this browser. */
 function data(){let d={};try{d=JSON.parse(localStorage.getItem("sv")||"{}")}catch(e){}d.users=d.users||{};d.chats=d.chats||{};d.msgs=d.msgs||{};d.contacts=d.contacts||{};d.status=d.status||{};return d}
-function save(d){try{localStorage.setItem("sv",JSON.stringify(d))}catch(e){toast("Could not save. Browser storage is full or blocked.")}}
+function rawSave(d){try{localStorage.setItem("sv",JSON.stringify(d))}catch(e){toast("Could not save. Browser storage is full or blocked.")}}
+function save(d){rawSave(d);cloudPush(d)}
+/* ---------- cloud sync (Firestore): profiles + text messages ---------- */
+const pushed={};let lastUs="",lastUt=0,cloudOn=false,ce=0,avC={s:"",t:""};
+function cloudErr(e){console.error(e);if(!ce){ce=1;toast("Cloud sync problem: "+((e&&e.code)||e))}}
+const tiny=src=>new Promise(r=>{const im=new Image();im.onload=()=>{const c=document.createElement("canvas");c.width=c.height=96;c.getContext("2d").drawImage(im,0,0,96,96);r(c.toDataURL("image/jpeg",.7))};im.onerror=()=>r("");im.src=src});
+function cloudPush(d){const F=window.sanvaadFirebase;if(!F||!F.cloud||!me||!F.auth.currentUser)return;const u=d.users[me];
+if(u){const o={nm:u.nm||"",ph:u.ph||"",ab:u.ab||"",hp:!!u.hp,hl:!!u.hl,rr:u.rr!==false};
+if(u.av){if(avC.s===u.av){if(avC.t)o.av=avC.t}else{avC.s=u.av;tiny(u.av).then(t=>{avC.t=t;lastUs="";cloudPush(data())})}}
+const k=JSON.stringify(o);if(k!==lastUs||Date.now()-lastUt>=19000){lastUs=k;lastUt=Date.now();F.cloud.setUser(me,Object.assign(o,{ls:u.ls||Date.now()})).catch(cloudErr)}}
+for(const id in d.msgs){const p=id.split("_");if(!p.includes(me))continue;for(const m of d.msgs[id]){if(m.y)continue;const k=id+"__"+m.t+"_"+m.f,j=JSON.stringify(m);if(pushed[k]!==j){pushed[k]=j;F.cloud.setMsg(k,{c:id,p,j}).catch(e=>{delete pushed[k];cloudErr(e)})}}}}
+function cloudDel(k){const F=window.sanvaadFirebase;delete pushed[k];if(F&&F.cloud)F.cloud.delMsg(k).catch(cloudErr)}
+async function cloudInit(){for(let i=0;i<300&&!window.sanvaadFirebase;i++)await new Promise(r=>setTimeout(r,100));const F=window.sanvaadFirebase;if(!F||!F.ready||!F.cloud)return null;const u=await F.cloud.user();return u?F:null}
+async function cloudProfile(){const F=await cloudInit();if(!F)return;try{const s=await F.cloud.getUser(me);if(s.exists()){const d=data();if(!d.users[me]){d.users[me]=s.data();rawSave(d)}}}catch(e){cloudErr(e)}}
+async function cloudStart(){if(cloudOn)return;cloudOn=true;const F=await cloudInit();if(!F){cloudOn=false;return}cloudPush(data());
+F.cloud.onUsers(snap=>{const d=data();let ch=0;snap.docChanges().forEach(c=>{if(c.type==="removed")return;const id=c.doc.id,x=c.doc.data(),o=d.users[id];if(id===me){if(!o){d.users[me]=x;ch=1}return}if(!o){d.users[id]=x;ch=1}else if(JSON.stringify(Object.assign({},o,x))!==JSON.stringify(o)){Object.assign(o,x);ch=1}});if(ch){rawSave(d);sync()}},cloudErr);
+let first=true;F.cloud.onMsgs(me,snap=>{const d=data();let ch=0,nw=0;snap.docChanges().forEach(c=>{const k=c.doc.id,x=c.doc.data();
+if(c.type==="removed"){const a=d.msgs[x.c];try{const m=JSON.parse(x.j),i=a?a.findIndex(z=>z.t==m.t&&z.f==m.f):-1;if(i>=0){a.splice(i,1);ch=1}}catch(e){}delete pushed[k];return}
+let m;try{m=JSON.parse(x.j)}catch(e){return}pushed[k]=x.j;const a=d.msgs[x.c]=d.msgs[x.c]||[],i=a.findIndex(z=>z.t==m.t&&z.f==m.f);
+if(i<0){a.push(m);a.sort((p,q)=>p.t-q.t);ch=1;if(m.f!=me&&!first)nw=1}else if(JSON.stringify(a[i])!==x.j){a[i]=m;ch=1}
+const last=a[a.length-1],cc=d.chats[x.c];if(!cc)d.chats[x.c]={m:x.p,l:prev(last),t:last.t,v:x.p.slice()};else{if(i<0&&m.f!=me&&cc.v&&!cc.v.includes(me))cc.v=x.p.slice();if(last.t>=cc.t){cc.l=prev(last);cc.t=last.t}}});
+first=false;if(ch){rawSave(d);sync();if(nw&&S("snd",true))beep()}},cloudErr)}
 const SS=(k,v)=>{try{if(v===undefined)return sessionStorage.getItem(k);if(v===null)sessionStorage.removeItem(k);else sessionStorage.setItem(k,v)}catch(e){}return null};
 function sync(){const d=data();U=d.users;C=d.contacts[me]||{};CH={};for(const id in d.chats){const c=d.chats[id];if(c.m.includes(me)&&(!c.v||c.v.includes(me)))CH[id]=c}if(U[me])P=Object.assign(U[me],{id:me});rl();if(cur)drawMsgs()}
 function msgHtml(m,id,st,o){if(m.y=="call")return`<div class="m sys">${esc(m.x)}</div>`;let b="";const sp='onclick="event.stopPropagation()"';
@@ -186,6 +216,7 @@ async function firebasePhoneAuth(){
    else await window.sanvaadFirebase.login(phone,password);
    PH=phone; me="u"+phone.replace(/\D/g,""); SS("svme",me); SS("svph",PH); SS("unl","1");
    try{localStorage.setItem("svlast",me);localStorage.setItem("svlph",PH)}catch(e){}
+   await cloudProfile();
    const u=data().users[me];
    if(!u){setup();} else {P=Object.assign(u,{id:me});boot();}
  } catch(e) {
@@ -213,14 +244,14 @@ function saveNew(){const n=document.getElementById("nm").value.trim();if(!n){doc
 const d=data(),u={nm:n,av:tmpAv||"",ph:PH,t:Date.now()};d.users[me]=u;save(d);P=Object.assign(u,{id:me});boot()}
 /* ---------- main shell ---------- */
 const rb=(t,i,l)=>`<button class="rb" data-t="${t}" title="${l}" onclick="go('${t}')">${i}<small>${l}</small></button>`;
-function boot(){applyFs();{const d=data();if(d.users[me]){d.users[me].ls=Date.now();save(d)}}if(!window.hb)window.hb=setInterval(()=>{const d=data();if(d.users[me]){d.users[me].ls=Date.now();save(d)}},20000);app.innerHTML=`<div class="sh" id="sh"><nav class="rail">${rb("chats",I.chat,"Chats")}${rb("status",I.stat,"Status")}${rb("calls",I.phone,"Calls")}<i></i>${rb("settings",I.gear,"Settings")}<span class="me" title="Profile" onclick="go('settings');prof()">${av(P,34)}</span></nav><section class="lst"><header><div style="display:flex;align-items:center;gap:10px">${logo(30)}<h2 id="lt"></h2></div><button class="ic" id="nb" title="New chat" onclick="newc=!newc;rl()">${I.plus}</button></header><input id="sq" placeholder="Search" oninput="q=this.value;rl()"><div id="lb"></div></section><section class="cp" id="cp"></section></div>`;
+function boot(){applyFs();cloudStart();{const d=data();if(d.users[me]){d.users[me].ls=Date.now();save(d)}}if(!window.hb)window.hb=setInterval(()=>{const d=data();if(d.users[me]){d.users[me].ls=Date.now();save(d)}},20000);app.innerHTML=`<div class="sh" id="sh"><nav class="rail">${rb("chats",I.chat,"Chats")}${rb("status",I.stat,"Status")}${rb("calls",I.phone,"Calls")}<i></i>${rb("settings",I.gear,"Settings")}<span class="me" title="Profile" onclick="go('settings');prof()">${av(P,34)}</span></nav><section class="lst"><header><div style="display:flex;align-items:center;gap:10px">${logo(30)}<h2 id="lt"></h2></div><button class="ic" id="nb" title="New chat" onclick="newc=!newc;rl()">${I.plus}</button></header><input id="sq" placeholder="Search" oninput="q=this.value;rl()"><div id="lb"></div></section><section class="cp" id="cp"></section></div>`;
 sync();window.addEventListener("storage",e=>{if(e.key=="sv"&&document.getElementById("sh")){const d=data();let n=0;for(const id in d.msgs)if(id.split("_").includes(me)){const l=d.msgs[id].slice(-1)[0];if(l&&l.f!=me&&l.t>lastT){n=1;lastT=l.t}}if(n&&S("snd",true)&&1)beep();sync()}});go("chats")}
 function go(t){stStop();tab=t;newc=false;arch=false;cur=null;q="";document.getElementById("sq").value="";document.getElementById("sh").classList.remove("inc");document.querySelectorAll(".rb").forEach(b=>b.classList.toggle("on",b.dataset.t==t));empty();rl()}
 function empty(){document.getElementById("cp").innerHTML=`<div class="hero"><div style="margin:0 auto 8px">${logo(110)}</div><h2 style="letter-spacing:.4px">Sanvaad</h2><p>A private space for you and your partner.</p><p style="font-size:12px;opacity:.8;margin-top:8px">Messages, photos, voice notes and status updates</p></div>`}
 function rl(){const lb=document.getElementById("lb");if(!lb)return;const lt=document.getElementById("lt"),sq=document.getElementById("sq"),nb=document.getElementById("nb");
 sq.style.display=tab=="calls"||tab=="status"?"none":"";sq.placeholder=tab=="settings"?"Search settings":newc?"Search by name or phone number":"Search chats";nb.style.display=tab=="chats"?"":"none";
 if(tab=="calls"){lt.textContent="Calls";const ks=[...new Set(Object.keys(C).concat(Object.values(CH).map(c=>c.m.find(x=>x!=me))))].filter(k=>U[k]&&!blocked().includes(k));
-lb.innerHTML=(ks.map(k=>`<div class="rw" style="cursor:default">${avu(k,48)}<div><b>${esc(dn(k))}</b><span>Tap to call</span></div><button class="ic" title="Voice call" onclick="callStart('${k}',false)">${I.phone}</button><button class="ic" title="Video call" onclick="callStart('${k}',true)">${I.vid}</button></div>`).join("")||'<div class="empty">Add a contact to start calling.</div>')+'<div class="empty" style="font-size:12px">Calls work between two tabs or windows of this browser for now. Calls between different phones need Firebase.</div>';return}
+lb.innerHTML=(ks.map(k=>`<div class="rw" style="cursor:default">${avu(k,48)}<div><b>${esc(dn(k))}</b><span>Tap to call</span></div><button class="ic" title="Voice call" onclick="callStart('${k}',false)">${I.phone}</button><button class="ic" title="Video call" onclick="callStart('${k}',true)">${I.vid}</button></div>`).join("")||'<div class="empty">Add a contact to start calling.</div>')+'<div class="empty" style="font-size:12px">Calls work between two tabs or windows of this browser for now. Calls between different phones are coming next.</div>';return}
 if(tab=="status"){lt.textContent="Status";const my=stl(me),o=Object.keys(data().status).filter(k=>k!=me&&!blocked().includes(k)&&U[k]&&stl(k).length&&(C[k]||CH[lid(me,k)]));
 lb.innerHTML=`<button class="rw" onclick="${my.length?`stv('${me}',0)`:"stc()"}"><span class="${my.length?"ring":""}">${av(P,52)}</span><div><b>My status</b><span>${my.length?my.length+" update(s). Tap to view":"Tap to add a status"}</span></div></button><button class="sr" onclick="stc()">${I.plus}<div><b>Add status</b></div></button><div style="padding:8px 16px;color:var(--mu);font-size:13px">Recent updates</div>`+(o.map(k=>`<button class="rw" onclick="stv('${k}',0)"><span class="ring">${avu(k,52)}</span><div><b>${esc(dn(k))}</b><span>${fmt(stl(k).slice(-1)[0].t)}</span></div></button>`).join("")||'<div class="empty">No updates from your contacts.</div>');return}
 if(tab=="settings"){lt.textContent="Settings";const it=[["account",I.user,"Account","Profile, about, delete account"],["privacy",I.lock,"Privacy","PIN, last seen, receipts, disappearing"],["chats",I.chat,"Chats","Theme, wallpaper, export"],["contacts",I.users,"Contacts","Saved contacts"],["stars",I.pin,"Starred messages","Messages you starred"],["notif",I.bell,"Notifications","Sounds, previews"],["access",I.sun,"Accessibility","Font size"],["storage",I.dbi,"Storage and data","Space used, clear chats"],["help",I.help,"Help","About, app version"]].filter(x=>(x[2]+x[3]).toLowerCase().includes(q.toLowerCase()));
@@ -276,7 +307,7 @@ o.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{o.remove();updMsg(id,t,
 o.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{const a=b.dataset.a;o.remove();if(a=="reply"){rpl={t,f,x:prev(m)};showRp();document.getElementById("mi").focus()}
 if(a=="edit")editMsg(id,t,f,m.x);if(a=="star")star(t,f);if(a=="copy"){try{navigator.clipboard.writeText(m.x);toast("Copied")}catch(e){toast("Could not copy")}}
 if(a=="me"){setS("hid",S("hid",[]).concat(id+"_"+t+"_"+f));drawMsgs();toast("Deleted for you")}
-if(a=="all")ask("Delete this message for everyone?",()=>{const d=data();d.msgs[id]=(d.msgs[id]||[]).filter(x=>!(x.t==t&&x.f==f));const l=d.msgs[id].slice(-1)[0];if(d.chats[id])d.chats[id].l=l?prev(l):"";save(d);sync();toast("Message deleted")},"Delete")})}
+if(a=="all")ask("Delete this message for everyone?",()=>{const d=data();cloudDel(id+"__"+t+"_"+f);d.msgs[id]=(d.msgs[id]||[]).filter(x=>!(x.t==t&&x.f==f));const l=d.msgs[id].slice(-1)[0];if(d.chats[id])d.chats[id].l=l?prev(l):"";save(d);sync();toast("Message deleted")},"Delete")})}
 function delChat(o){ask("Delete this chat? Messages are removed only for you.",()=>{const id=lid(me,o),d=data();setS("hid",S("hid",[]).concat((d.msgs[id]||[]).map(m=>id+"_"+m.t+"_"+m.f)));if(d.chats[id]){const v=(d.chats[id].v||d.chats[id].m).filter(x=>x!=me);if(v.length)d.chats[id].v=v;else{delete d.chats[id];delete d.msgs[id]}}save(d);sync();go("chats");toast("Chat deleted")},"Delete")}
 function rmC0(k){const d=data();if(d.contacts[me])delete d.contacts[me][k];save(d);sync()}
 function blk(o){ask("Block "+dn(o)+"? They will be hidden from your chats.",()=>{setS("blk",blocked().concat(o));go("chats");toast("Blocked")},"Block")}
@@ -346,7 +377,7 @@ if(id=="stars")b=S("stars",[]).map(z=>{const p=z.c.split("_").find(x=>x!=me);ret
 if(id=="notif")b=tg(S("snd",true),"Message sounds","flip('snd',true)")+tg(S("pv",true),"Show message preview in chat list","flip('pv',true);rl()");
 if(id=="access")b=`<h3>Font size</h3>`+segB([["s","Small"],["m","Medium"],["l","Large"]],S("fs","m"),"setFs");
 if(id=="storage"){let kb=0;try{kb=Math.round((localStorage.getItem("sv")||"").length/1024)}catch(e){}b=`<div class="tg" style="cursor:default"><span>Space used by Sanvaad</span><b>${kb} KB</b></div><button class="btn d" onclick="clearAll()">Clear all chats</button>`}
-if(id=="help")b=`<div class="tg" style="cursor:default"><span>About Sanvaad</span><b>For girlfriend &amp; boyfriend</b></div><div class="tg" style="cursor:default"><span>Help center</span><b>Coming soon</b></div><div class="tg" style="cursor:default"><span>App version</span><b>1.1 (local demo)</b></div>`;
+if(id=="help")b=`<div class="tg" style="cursor:default"><span>About Sanvaad</span><b>For girlfriend &amp; boyfriend</b></div><div class="tg" style="cursor:default"><span>Help center</span><b>Coming soon</b></div><div class="tg" style="cursor:default"><span>App version</span><b>1.2 (cloud chat)</b></div>`;
 document.getElementById("cp").innerHTML=`<header class="ch"><button class="ic bk" onclick="go('settings')">${I.back}</button><b>${T[id]}</b></header><div class="dp">${b}</div>`;document.getElementById("sh").classList.add("inc")}
 function setTh(t){theme(t);sec("chats")}
 /* ---------- calls ---------- */
@@ -373,5 +404,5 @@ else if(m.t=="answer"&&pc){await pc.setRemoteDescription(m.sdp);iceQ.forEach(c=>
 else if(m.t=="ice"){if(pc&&pc.remoteDescription)pc.addIceCandidate(m.c).catch(()=>{});else iceQ.push(m.c)}
 else if(m.t=="end"||m.t=="busy"||m.t=="decline"){if(m.from!==peer)return;const t=m.t;callEnd(0);toast(t=="busy"?"They are on another call":t=="decline"?"Call declined":"Call ended")}};
 {const lk=document.createElement("link");lk.rel="icon";lk.href="data:image/svg+xml,"+encodeURIComponent(logo(64).replace("<svg ",'<svg xmlns="http://www.w3.org/2000/svg" '));document.head.appendChild(lk)}
-function out(){SS("svme",null);SS("svph",null);SS("unl",null);try{localStorage.removeItem("svlast")}catch(e){}location.reload()}
+function out(){SS("svme",null);SS("svph",null);SS("unl",null);try{localStorage.removeItem("svlast")}catch(e){}try{window.sanvaadFirebase.logout().then(()=>location.reload(),()=>location.reload())}catch(e){location.reload()}}
 </script></body></html>
