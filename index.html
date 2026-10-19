@@ -239,7 +239,7 @@ const SC=["#6c4dff","#ff6b8a","#0f9d76","#e8832a","#2b6fd6","#2a2540"];
 function theme(t){if(t==="auto")document.documentElement.removeAttribute("data-theme");else document.documentElement.dataset.theme=t;LS("th",t)}
 theme(LS("th")||"auto");
 /* ---------- start ---------- */
-setTimeout(()=>{me=SS("svme");PH=SS("svph")||"";if(!me){let l=null;try{l=localStorage.getItem("svlast")}catch(e){}if(l){me=l;try{PH=localStorage.getItem("svlph")||""}catch(e){}if(S("pin"))return lockScreen();me=null;PH=""}return intro()}gate()},0);
+setTimeout(()=>{me=SS("svme");PH=SS("svph")||"";if(!me){let l=null;try{l=localStorage.getItem("svlast")}catch(e){}if(l){me=l;try{PH=localStorage.getItem("svlph")||""}catch(e){}if(S("pin"))return lockScreen();SS("svme",me);SS("svph",PH);SS("unl","1");return gate()}return intro()}gate()},0);
 function gate(){const u=data().users[me];if(!u)return setup();P=Object.assign(u,{id:me});if(S("pin")&&!SS("unl"))return lockScreen();boot()}
 function lockScreen(){app.innerHTML=`<div class="pst"><div>${logo(90)}</div><div class="card"><h2>Enter your PIN</h2><input id="pi" type="password" inputmode="numeric" maxlength="6" class="otp" placeholder="••••"><div class="err" id="er"></div><button class="btn" id="ub">Unlock</button></div></div>`;
 const i=document.getElementById("pi"),ok=()=>{if(pinHash(i.value)===S("pin")){SS("svme",me);SS("svph",PH);SS("unl","1");gate()}else{document.getElementById("er").textContent="Wrong PIN.";i.value=""}};document.getElementById("ub").onclick=ok;i.oninput=()=>{if(i.value.length>=4&&pinHash(i.value)===S("pin"))ok()};i.focus()}
